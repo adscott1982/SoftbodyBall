@@ -654,7 +654,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.12
+  orthographic size: 8.99
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -695,8 +695,8 @@ GameObject:
   - component: {fileID: 558182484}
   - component: {fileID: 558182483}
   - component: {fileID: 558182482}
-  - component: {fileID: 558182485}
   - component: {fileID: 558182486}
+  - component: {fileID: 558182485}
   m_Layer: 0
   m_Name: Floor
   m_TagString: Untagged
@@ -746,10 +746,10 @@ MonoBehaviour:
       bevelSize: 0
       spriteIndex: 0
       corner: 1
-    - position: {x: 1.5, y: 3, z: 0}
-      leftTangent: {x: 0, y: 0, z: 0}
-      rightTangent: {x: 0, y: 0, z: 0}
-      mode: 0
+    - position: {x: 1.3993988, y: 10.066639, z: 0}
+      leftTangent: {x: -0.2014823, y: -10.675137, z: 0}
+      rightTangent: {x: 0.10875869, y: 6.275856, z: 0}
+      mode: 2
       height: 1
       bevelCutoff: 0
       bevelSize: 0
@@ -858,8 +858,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!68 &558182485
-EdgeCollider2D:
+--- !u!60 &558182485
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -872,18 +872,49 @@ EdgeCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   m_Points:
-  - {x: -2, y: -2}
-  - {x: -2.008561, y: 29.276505}
-  - {x: -1.6530085, y: 3}
-  - {x: 1.5, y: 3}
-  - {x: 1.7927415, y: 6.491459}
-  - {x: 1.9914391, y: 19.602083}
-  - {x: 2, y: -2}
-  - {x: -1.8056297, y: -2}
-  - {x: -1.9490371, y: -2}
-  - {x: -2, y: -2}
+    m_Paths:
+    - - {x: -2, y: -2}
+      - {x: -2.008561, y: 29.276505}
+      - {x: -1.6530085, y: 3}
+      - {x: -1.5139971, y: 2.849958}
+      - {x: -1.3549004, y: 2.7101173}
+      - {x: -1.1491145, y: 2.5694752}
+      - {x: -0.90641737, y: 2.4598386}
+      - {x: -0.63658804, y: 2.4130177}
+      - {x: -0.3494044, y: 2.4608188}
+      - {x: -0.05464521, y: 2.6350513}
+      - {x: 0.23791122, y: 2.967523}
+      - {x: 0.5184863, y: 3.4900422}
+      - {x: 0.77730185, y: 4.2344174}
+      - {x: 1.0045793, y: 5.232456}
+      - {x: 1.1905401, y: 6.515967}
+      - {x: 1.3254063, y: 8.116758}
+      - {x: 1.3993988, y: 10.066639}
+      - {x: 1.4233586, y: 11.114483}
+      - {x: 1.4511883, y: 11.778459}
+      - {x: 1.4820698, y: 12.10475}
+      - {x: 1.5151845, y: 12.139539}
+      - {x: 1.5497136, y: 11.929008}
+      - {x: 1.5848393, y: 11.519346}
+      - {x: 1.6197422, y: 10.956727}
+      - {x: 1.6856073, y: 9.557369}
+      - {x: 1.7622747, y: 7.46576}
+      - {x: 1.7927415, y: 6.491459}
+      - {x: 1.9914391, y: 19.602083}
+      - {x: 2, y: -2}
+      - {x: -1.8056297, y: -2}
+      - {x: -1.9490371, y: -2}
+      - {x: -2, y: -2}
 --- !u!50 &558182486
 Rigidbody2D:
   serializedVersion: 4
@@ -920,6 +951,7 @@ GameObject:
   - component: {fileID: 564849847}
   - component: {fileID: 564849846}
   - component: {fileID: 564849851}
+  - component: {fileID: 564849852}
   m_Layer: 0
   m_Name: Side1 (3)
   m_TagString: Untagged
@@ -1145,6 +1177,22 @@ HingeJoint2D:
   m_AngleLimits:
     m_LowerAngle: 0
     m_UpperAngle: 359
+--- !u!70 &564849852
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564849844}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.00000023841858}
+  m_Size: {x: 4.0000005, y: 4}
+  m_Direction: 0
 --- !u!1 &893033956
 GameObject:
   m_ObjectHideFlags: 0
@@ -2209,8 +2257,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5e8d30b83b5d348a1f4737553e4bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NumberOfSides: 4
+  NumberOfSides: 12
   Radius: 1
+  MassKg: 0.45
+  ColliderThickness: 0.01
 --- !u!1 &2040577575
 GameObject:
   m_ObjectHideFlags: 0
