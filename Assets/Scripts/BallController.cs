@@ -17,6 +17,11 @@ public class BallController : MonoBehaviour
     [Range(0.001f, 0.5f)]
     public float ColliderThickness = 0.01f;
 
+    [Range(0f, 20f)]
+    public float InflationForce = 10f;
+
+    public PhysicsMaterial2D BallPhysicsMaterial;
+
     // Private fields
     private List<Side> sides;
 
@@ -30,6 +35,14 @@ public class BallController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+    }
+
+    private void FixedUpdate()
+    {
+        foreach(var side in this.sides)
+        {
+            side.Controller.InflationForce = this.InflationForce;
+        }
     }
 
     private List<Side> GetSides()
@@ -59,7 +72,7 @@ public class BallController : MonoBehaviour
 
         for (var i = 0; i < this.NumberOfSides; i++)
         {
-            if ((i + 1) == this.NumberOfSides)
+            if (i == this.NumberOfSides - 1)
             {
                 sides[i].Controller.ConnectHinge(sides[0]);
                 continue;
@@ -78,7 +91,7 @@ public class BallController : MonoBehaviour
 
         var sideMass = this.MassKg / this.NumberOfSides;
         var sideController = sideObject.AddComponent<SideController>();
-        sideController.Initialise(rotatedVector, sideLength, sideMass, this.ColliderThickness);
+        sideController.Initialise(rotatedVector, sideLength, sideMass, this.ColliderThickness, this.BallPhysicsMaterial);
 
         return new Side(sideObject, sideController);
     }

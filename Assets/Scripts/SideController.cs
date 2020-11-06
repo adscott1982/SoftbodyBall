@@ -9,8 +9,12 @@ public class SideController : MonoBehaviour
     private Vector2 end1;
     private Vector2 end2;
     private float mass;
-    private Rigidbody2D rb;
     private CapsuleCollider2D capsuleCollider;
+    private HingeJoint2D hingeJoint2D;
+    private Vector2 anchorOffset;
+
+    public Rigidbody2D RigidBody2D { get; private set; }
+    public float InflationForce { get; set; }
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +28,13 @@ public class SideController : MonoBehaviour
         //Debug.DrawLine(this.end1, this.end2, Color.cyan);
     }
 
-    internal void Initialise(Vector2 rotatedVector, float sideLength, float mass, float thickness)
+    private void FixedUpdate()
+    {
+        var vectorDirection = this.RigidBody2D.rotation.DegreeToVector2() * this.InflationForce;
+        this.RigidBody2D.AddForce(vectorDirection, ForceMode2D.Force);
+    }
+
+    internal void Initialise(Vector2 rotatedVector, float sideLength, float mass, float thickness, PhysicsMaterial2D material)
     {
         this.transform.localPosition = rotatedVector;
 
@@ -33,40 +43,51 @@ public class SideController : MonoBehaviour
         this.end1 = this.transform.position.AsVector2() - endOffset;
         this.end2 = this.transform.position.AsVector2() + endOffset;
 
-        this.CreateRigidBody(mass, rotatedVector, thickness);
-
+        this.CreateRigidBody(mass, rotatedVector, thickness, material);
         this.mass = mass;
     }
 
     internal void ConnectHinge(Side otherSide)
     {
-
+        this.hingeJoint2D = this.gameObject.AddComponent<HingeJoint2D>();
+        this.hingeJoint2D.autoConfigureConnectedAnchor = false;
+        this.hingeJoint2D.connectedBody = otherSide.Controller.RigidBody2D;
+        this.hingeJoint2D.anchor = this.anchorOffset;
+        this.hingeJoint2D.connectedAnchor = -this.anchorOffset;
     }
 
-    private void CreateRigidBody(float mass, Vector2 rotatedVector, float thickness)
+    private void CreateRigidBody(float mass, Vector2 rotatedVector, float thickness, PhysicsMaterial2D material)
     {
-        this.rb = this.gameObject.AddComponent<Rigidbody2D>();
-        this.rb.mass = mass;
-        this.rb.bodyType = RigidbodyType2D.Dynamic;
-        this.rb.gravityScale = 1f;
-        this.rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        this.rb.rotation = rotatedVector.DirectionDegrees();
-        this.rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
+        this.RigidBody2D = this.gameObject.AddComponent<Rigidbody2D>();
+        
+        this.RigidBody2D.mass = mass;
+        this.RigidBody2D.bodyType = RigidbodyType2D.Dynamic;
+        this.RigidBody2D.gravityScale = 1f;
+        this.RigidBody2D.interpolation = RigidbodyInterpolation2D.Interpolate;
+        this.RigidBody2D.rotation = rotatedVector.DirectionDegrees();
+        this.RigidBody2D.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        this.RigidBody2D.sharedMaterial = material;
         this.capsuleCollider = this.gameObject.AddComponent<CapsuleCollider2D>();
 
         this.capsuleCollider.direction = CapsuleDirection2D.Vertical;
         var height = (this.end2 - this.end1).magnitude;
+        this.anchorOffset = new Vector2(0, height / 2f);
         this.capsuleCollider.size = new Vector2(thickness, height);
     }
 
     private void OnDrawGizmos()
     {
         //Gizmos.color = Color.green;
-        //Gizmos.DrawSphere(this.end1, 0.05f);
+
+        //if (this.name == "Side0")
+        //{
+        //    Gizmos.color = Color.blue;
+        //}
+
+        //Gizmos.DrawSphere(this.transform.TransformPoint(this.hingeJoint2D.anchor), 0.05f);
 
         //Gizmos.color = Color.red;
-        //Gizmos.DrawSphere(this.end2, 0.05f);
+        //Gizmos.DrawSphere(this.transform.TransformPoint(this.RightEndOffset), 0.05f);
 
         //Gizmos.color = Color.cyan;
         //Gizmos.DrawLine(this.end1, this.end2);
