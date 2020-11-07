@@ -21,6 +21,7 @@ public class BallController : MonoBehaviour
     public float InflationForce = 10f;
 
     public PhysicsMaterial2D BallPhysicsMaterial;
+    private Centroid centroid;
 
     // Private fields
     private List<Side> sides;
@@ -29,7 +30,20 @@ public class BallController : MonoBehaviour
     private void Awake()
     {
         // Create the sides
+        //this.centroid = this.CreateCentroid();
         this.sides = this.GetSides();
+    }
+
+    private Centroid CreateCentroid()
+    {
+        var centroidObject = new GameObject($"Centroid");
+        centroidObject.transform.parent = this.transform;
+
+        var centroidMass = this.MassKg / this.NumberOfSides;
+        var centroidController = centroidObject.AddComponent<CentroidController>();
+        centroidController.Initialise(centroidMass);
+
+        return new Centroid(centroidObject, centroidController);
     }
 
     // Update is called once per frame
@@ -74,11 +88,11 @@ public class BallController : MonoBehaviour
         {
             if (i == this.NumberOfSides - 1)
             {
-                sides[i].Controller.ConnectHinge(sides[0]);
+                sides[i].Controller.ConnectJoints(sides[0]);
                 continue;
             }
 
-            sides[i].Controller.ConnectHinge(sides[i + 1]);
+            sides[i].Controller.ConnectJoints(sides[i + 1]);
         }
 
         return sides;

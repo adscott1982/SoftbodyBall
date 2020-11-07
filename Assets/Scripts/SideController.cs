@@ -12,6 +12,7 @@ public class SideController : MonoBehaviour
     private CapsuleCollider2D capsuleCollider;
     private HingeJoint2D hingeJoint2D;
     private Vector2 anchorOffset;
+    private DistanceJoint2D distanceJoint2D;
 
     public Rigidbody2D RigidBody2D { get; private set; }
     public float InflationForce { get; set; }
@@ -47,13 +48,29 @@ public class SideController : MonoBehaviour
         this.mass = mass;
     }
 
-    internal void ConnectHinge(Side otherSide)
+    internal void ConnectJoints(Side otherSide)
+    {
+        this.ConnectHinge(otherSide);
+
+    }
+
+    private void ConnectHinge(Side otherSide)
     {
         this.hingeJoint2D = this.gameObject.AddComponent<HingeJoint2D>();
         this.hingeJoint2D.autoConfigureConnectedAnchor = false;
         this.hingeJoint2D.connectedBody = otherSide.Controller.RigidBody2D;
         this.hingeJoint2D.anchor = this.anchorOffset;
         this.hingeJoint2D.connectedAnchor = -this.anchorOffset;
+
+        this.distanceJoint2D = this.gameObject.AddComponent<DistanceJoint2D>();
+        this.distanceJoint2D.maxDistanceOnly = false;
+        this.distanceJoint2D.autoConfigureConnectedAnchor = false;
+        this.distanceJoint2D.autoConfigureDistance = false;
+        this.distanceJoint2D.distance = 0f;
+        this.distanceJoint2D.connectedBody = otherSide.Controller.RigidBody2D;
+        this.distanceJoint2D.anchor = this.anchorOffset;
+        this.distanceJoint2D.connectedAnchor = -this.anchorOffset;
+        this.distanceJoint2D.maxDistanceOnly = false;
     }
 
     private void CreateRigidBody(float mass, Vector2 rotatedVector, float thickness, PhysicsMaterial2D material)

@@ -499,7 +499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5e8d30b83b5d348a1f4737553e4bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NumberOfSides: 18
+  NumberOfSides: 6
   Radius: 1
   MassKg: 0.45
   ColliderThickness: 0.005
