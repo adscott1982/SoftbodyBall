@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts;
+using Cinemachine;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BallController : MonoBehaviour
@@ -17,8 +19,10 @@ public class BallController : MonoBehaviour
     [Range(0.001f, 0.5f)]
     public float ColliderThickness = 0.01f;
 
-    [Range(0f, 20f)]
+    [Range(0f, 50f)]
     public float InflationForce = 10f;
+
+    public CinemachineVirtualCamera VirtualCamera;
 
     public PhysicsMaterial2D BallPhysicsMaterial;
     private Centroid centroid;
@@ -30,15 +34,16 @@ public class BallController : MonoBehaviour
     private void Awake()
     {
         // Create the sides
-        //this.centroid = this.CreateCentroid();
-        this.sides = this.GetSides();
+        this.centroid = this.CreateCentroid();
+        this.sides = this.CreateSides(this.centroid);
+        this.VirtualCamera.Follow = this.centroid.Object.transform;
     }
 
     private Centroid CreateCentroid()
     {
         var centroidObject = new GameObject($"Centroid");
         centroidObject.transform.parent = this.transform;
-
+        centroidObject.transform.localPosition = Vector3.zero;
         var centroidMass = this.MassKg / this.NumberOfSides;
         var centroidController = centroidObject.AddComponent<CentroidController>();
         centroidController.Initialise(centroidMass);
@@ -53,13 +58,16 @@ public class BallController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        foreach(var side in this.sides)
-        {
-            side.Controller.InflationForce = this.InflationForce;
-        }
+        //foreach(var side in this.sides)
+        //{
+        //    side.Controller.InflationForce = this.InflationForce;
+        //}
+
+        //var averageSidePositions = this.GetMeanVector(this.sides.Select(s => s.Controller.transform.position).ToArray());
+        //this.centroid.Object.transform.position = averageSidePositions;
     }
 
-    private List<Side> GetSides()
+    private List<Side> CreateSides(Centroid centroid)
     {
         var vectors = new List<Vector2>();
         var sides = new List<Side>();
@@ -88,11 +96,11 @@ public class BallController : MonoBehaviour
         {
             if (i == this.NumberOfSides - 1)
             {
-                sides[i].Controller.ConnectJoints(sides[0]);
+                sides[i].Controller.ConnectJoints(centroid, sides[0]);
                 continue;
             }
 
-            sides[i].Controller.ConnectJoints(sides[i + 1]);
+            sides[i].Controller.ConnectJoints(centroid, sides[i + 1]);
         }
 
         return sides;
@@ -108,5 +116,21 @@ public class BallController : MonoBehaviour
         sideController.Initialise(rotatedVector, sideLength, sideMass, this.ColliderThickness, this.BallPhysicsMaterial);
 
         return new Side(sideObject, sideController);
+    }
+
+    private Vector3 GetMeanVector(Vector3[] positions)
+    {
+        if (positions.Length == 0)
+            return Vector3.zero;
+        float x = 0f;
+        float y = 0f;
+        float z = 0f;
+        foreach (Vector3 pos in positions)
+        {
+            x += pos.x;
+            y += pos.y;
+            z += pos.z;
+        }
+        return new Vector3(x / positions.Length, y / positions.Length, z / positions.Length);
     }
 }

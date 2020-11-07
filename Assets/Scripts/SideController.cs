@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class SideController : MonoBehaviour
@@ -13,6 +14,8 @@ public class SideController : MonoBehaviour
     private HingeJoint2D hingeJoint2D;
     private Vector2 anchorOffset;
     private DistanceJoint2D distanceJoint2D;
+    private Centroid centroid;
+    private SpringJoint2D springJoint2D;
 
     public Rigidbody2D RigidBody2D { get; private set; }
     public float InflationForce { get; set; }
@@ -31,8 +34,8 @@ public class SideController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        var vectorDirection = this.RigidBody2D.rotation.DegreeToVector2() * this.InflationForce;
-        this.RigidBody2D.AddForce(vectorDirection, ForceMode2D.Force);
+        //var vectorDirection = this.RigidBody2D.rotation.DegreeToVector2() * this.InflationForce;
+        //this.RigidBody2D.AddForce(vectorDirection, ForceMode2D.Force);
     }
 
     internal void Initialise(Vector2 rotatedVector, float sideLength, float mass, float thickness, PhysicsMaterial2D material)
@@ -48,10 +51,10 @@ public class SideController : MonoBehaviour
         this.mass = mass;
     }
 
-    internal void ConnectJoints(Side otherSide)
+    internal void ConnectJoints(Centroid centroid, Side otherSide)
     {
         this.ConnectHinge(otherSide);
-
+        this.ConnectSpring(centroid);
     }
 
     private void ConnectHinge(Side otherSide)
@@ -62,15 +65,27 @@ public class SideController : MonoBehaviour
         this.hingeJoint2D.anchor = this.anchorOffset;
         this.hingeJoint2D.connectedAnchor = -this.anchorOffset;
 
-        this.distanceJoint2D = this.gameObject.AddComponent<DistanceJoint2D>();
-        this.distanceJoint2D.maxDistanceOnly = false;
-        this.distanceJoint2D.autoConfigureConnectedAnchor = false;
-        this.distanceJoint2D.autoConfigureDistance = false;
-        this.distanceJoint2D.distance = 0f;
-        this.distanceJoint2D.connectedBody = otherSide.Controller.RigidBody2D;
-        this.distanceJoint2D.anchor = this.anchorOffset;
-        this.distanceJoint2D.connectedAnchor = -this.anchorOffset;
-        this.distanceJoint2D.maxDistanceOnly = false;
+        //this.distanceJoint2D = this.gameObject.AddComponent<DistanceJoint2D>();
+        //this.distanceJoint2D.maxDistanceOnly = false;
+        //this.distanceJoint2D.autoConfigureConnectedAnchor = false;
+        //this.distanceJoint2D.autoConfigureDistance = false;
+        //this.distanceJoint2D.distance = 0f;
+        //this.distanceJoint2D.connectedBody = otherSide.Controller.RigidBody2D;
+        //this.distanceJoint2D.anchor = this.anchorOffset;
+        //this.distanceJoint2D.connectedAnchor = -this.anchorOffset;
+        //this.distanceJoint2D.maxDistanceOnly = false;
+    }
+
+    private void ConnectSpring(Centroid centroid)
+    {
+        this.springJoint2D = this.gameObject.AddComponent<SpringJoint2D>();
+        this.springJoint2D.autoConfigureConnectedAnchor = false;
+        this.springJoint2D.autoConfigureDistance = true;
+        this.springJoint2D.connectedBody = centroid.Controller.RigidBody2D;
+        this.springJoint2D.anchor = this.transform.InverseTransformPoint(this.RigidBody2D.position);
+        this.springJoint2D.connectedAnchor = centroid.Object.transform.InverseTransformPoint(centroid.Controller.RigidBody2D.position);
+        this.springJoint2D.frequency = 1000000;
+        this.springJoint2D.dampingRatio = 0f;
     }
 
     private void CreateRigidBody(float mass, Vector2 rotatedVector, float thickness, PhysicsMaterial2D material)
@@ -84,6 +99,9 @@ public class SideController : MonoBehaviour
         this.RigidBody2D.rotation = rotatedVector.DirectionDegrees();
         this.RigidBody2D.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         this.RigidBody2D.sharedMaterial = material;
+        this.RigidBody2D.angularDrag = 0f;
+        this.RigidBody2D.drag = 0f;
+        
         this.capsuleCollider = this.gameObject.AddComponent<CapsuleCollider2D>();
 
         this.capsuleCollider.direction = CapsuleDirection2D.Vertical;
@@ -94,14 +112,14 @@ public class SideController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        //Gizmos.color = Color.green;
+        Gizmos.color = Color.red;
 
-        //if (this.name == "Side0")
-        //{
-        //    Gizmos.color = Color.blue;
-        //}
+        if (this.name == "Side0")
+        {
+            Gizmos.color = Color.blue;
+        }
 
-        //Gizmos.DrawSphere(this.transform.TransformPoint(this.hingeJoint2D.anchor), 0.05f);
+        Gizmos.DrawSphere(this.transform.TransformPoint(this.hingeJoint2D.anchor), 0.15f);
 
         //Gizmos.color = Color.red;
         //Gizmos.DrawSphere(this.transform.TransformPoint(this.RightEndOffset), 0.05f);
